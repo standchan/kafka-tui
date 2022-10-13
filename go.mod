@@ -2,11 +2,13 @@ module kafka-tui
 
 go 1.19
 
-require github.com/Shopify/sarama v1.37.2
+require (
+	github.com/Shopify/sarama v1.37.2
+	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1
+)
 
 require (
 	github.com/gdamore/encoding v1.0.0 // indirect
-	github.com/gdamore/tcell/v2 v2.4.1-0.20210905002822-f057f0a857a1 // indirect
 	github.com/lucasb-eyer/go-colorful v1.2.0 // indirect
 	github.com/mattn/go-runewidth v0.0.13 // indirect
 	github.com/rivo/uniseg v0.4.2 // indirect
@@ -20,7 +22,6 @@ require (
 	github.com/eapache/go-resiliency v1.3.0 // indirect
 	github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
-	github.com/gdamore/tcell v1.4.0
 	github.com/golang/snappy v0.0.4 // indirect
 	github.com/hashicorp/errwrap v1.0.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
