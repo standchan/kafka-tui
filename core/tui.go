@@ -1,33 +1,44 @@
 package core
 
 import (
+	"fmt"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
 
 /*
-	tview.TextView
-	tview.Flex
-	tview.List
+	tview.Box	盒子、外壳
+	tview.TextView	文本输出？
+	tview.TextArea	文本输入
+	tview.Table	表格
+	tview.TreeView 树形文件夹结构
+	tview.Grid	网格布局
+	tview.Flex	弹性布局
+	tview.List	列表
 	tview.InputField
 	tview.Primitive
 	这几种的区别在哪里
 */
 
 type KafkaTUI struct {
-	enterPanel *tview.Form
-	// versionPanel *tview.Flex
+	enterPanel       *tview.Form
+	versionPanel     *tview.Flex
+	versionInfoPanel *tview.TextView
+
+	leftPanel  *tview.Flex
+	rightPanel *tview.Flex
 	// metaPanel    *tview.TextView
 	// commandPanel *tview.InputField
 	// resultsPanel *tview.TextView
 	// outputPanel  *tview.List
 	// searchPanel  *tview.InputField
 	// topicsPanel  *tview.List
-	// infoPanel    *tview.TextArea
+	infoPanel *tview.TextView
 	// helpPanel    *tview.Flex
 
-	// version   string
-	// gitCommit string
+	version   string
+	gitCommit string
 	// config    config.Config
 
 	app *tview.Application
@@ -39,11 +50,16 @@ func NewKafkaTUI() *KafkaTUI {
 	tui := &KafkaTUI{}
 	tui.app = &tview.Application{}
 	tui.enterPanel = tui.CreateEnterPanel()
+	tui.versionPanel = tui.CreateVersionPanel()
 	return tui
 }
 
 func (ui *KafkaTUI) CreateVersionPanel() *tview.Flex {
-	return nil
+	versionPanel := tview.NewFlex().SetDirection(tview.FlexRow)
+	versionPanel.SetBorder(true).SetTitle(fmt.Sprintf(" Version: %s (%s) ", ui.version, ui.gitCommit))
+	ui.versionInfoPanel = tview.NewTextView().SetDynamicColors(true).SetRegions(true)
+	versionPanel.AddItem(ui.versionInfoPanel, 2, 1, false)
+	return versionPanel
 }
 
 func (ui *KafkaTUI) CreateMetaPanel() *tview.TextView {
@@ -63,15 +79,18 @@ func (ui *KafkaTUI) CreateOutputPanel() *tview.List {
 }
 
 func (ui *KafkaTUI) CreateSearchPanel() *tview.InputField {
-	return nil
+	searchArea := tview.NewInputField().SetLabel(" TOPIC ")
+	searchArea.SetBorder(true).SetTitle(" Search (%s) ")
+	return searchArea
 }
 
 func (ui *KafkaTUI) CreateTopicsPanel() *tview.List {
 	return nil
 }
 
-func (ui *KafkaTUI) CreateInfoPanel() *tview.TextArea {
-	return nil
+func (ui *KafkaTUI) CreateInfoPanel() *tview.TextView {
+	infoArea := tview.NewTextView()
+	return infoArea
 }
 
 func (ui *KafkaTUI) CreateWelcomePanel() {
