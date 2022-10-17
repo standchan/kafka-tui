@@ -32,9 +32,9 @@ type KafkaTUI struct {
 	// commandPanel *tview.InputField
 	// resultsPanel *tview.TextView
 	// outputPanel  *tview.List
-	// searchPanel  *tview.InputField
-	// topicsPanel  *tview.List
-	infoPanel *tview.TextView
+	searchPanel *tview.InputField
+	topicsPanel *tview.List
+	infoPanel   *tview.TextView
 	// helpPanel    *tview.Flex
 
 	version   string
@@ -51,6 +51,10 @@ func NewKafkaTUI() *KafkaTUI {
 	tui.app = &tview.Application{}
 	tui.enterPanel = tui.CreateEnterPanel()
 	tui.versionPanel = tui.CreateVersionPanel()
+	tui.leftPanel = tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(tui.searchPanel, 3, 0, false).
+		AddItem(tui.topicsPanel, 0, 1, false).
+		AddItem(tui.infoPanel, 3, 1, false)
 	return tui
 }
 
@@ -85,7 +89,9 @@ func (ui *KafkaTUI) CreateSearchPanel() *tview.InputField {
 }
 
 func (ui *KafkaTUI) CreateTopicsPanel() *tview.List {
-	return nil
+	topicList := tview.NewList().ShowSecondaryText(false)
+	topicList.SetBorder(true).SetTitle(" Keys (%s) ")
+	return topicList
 }
 
 func (ui *KafkaTUI) CreateInfoPanel() *tview.TextView {
