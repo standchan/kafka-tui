@@ -26,16 +26,20 @@ type KafkaTUI struct {
 	versionPanel     *tview.Flex
 	versionInfoPanel *tview.TextView
 
-	leftPanel  *tview.Flex
-	rightPanel *tview.Flex
-	// metaPanel    *tview.TextView
-	// commandPanel *tview.InputField
-	// resultsPanel *tview.TextView
-	// outputPanel  *tview.List
+	metaPanel    *tview.TextView
+	commandPanel *tview.TextView
+	resultsPanel *tview.TextView
+	outputPanel  *tview.List
+
 	searchPanel *tview.InputField
 	topicsPanel *tview.List
 	infoPanel   *tview.TextView
 	// helpPanel    *tview.Flex
+
+	leftPanel  *tview.Flex
+	rightPanel *tview.Flex
+
+	layout *tview.Flex
 
 	version   string
 	gitCommit string
@@ -51,10 +55,32 @@ func NewKafkaTUI() *KafkaTUI {
 	tui.app = &tview.Application{}
 	tui.enterPanel = tui.CreateEnterPanel()
 	tui.versionPanel = tui.CreateVersionPanel()
+
+	tui.searchPanel = tui.CreateSearchPanel()
+	tui.topicsPanel = tui.CreateTopicsPanel()
+	tui.infoPanel = tui.CreateInfoPanel()
+
 	tui.leftPanel = tview.NewFlex().SetDirection(tview.FlexRow).
 		AddItem(tui.searchPanel, 3, 0, false).
 		AddItem(tui.topicsPanel, 0, 1, false).
 		AddItem(tui.infoPanel, 3, 1, false)
+
+	tui.versionPanel = tui.CreateVersionPanel()
+	tui.metaPanel = tui.CreateMetaPanel()
+	tui.commandPanel = tui.CreateCommandPanel()
+	tui.resultsPanel = tui.CreateResultsPanel()
+	tui.outputPanel = tui.CreateOutputPanel()
+
+	tui.rightPanel = tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(tui.versionPanel, 3, 0, false).
+		AddItem(tui.metaPanel, 0, 1, false).
+		AddItem(tui.commandPanel, 3, 1, false).
+		AddItem(tui.resultsPanel, 3, 1, false).
+		AddItem(tui.outputPanel, 3, 1, false)
+
+	tui.layout = tview.NewFlex().
+		AddItem(tui.leftPanel, 0, 3, false).
+		AddItem(tui.rightPanel, 0, 8, false)
 	return tui
 }
 
@@ -70,7 +96,7 @@ func (ui *KafkaTUI) CreateMetaPanel() *tview.TextView {
 	return nil
 }
 
-func (ui *KafkaTUI) CreateResultsPanel() *tview.InputField {
+func (ui *KafkaTUI) CreateResultsPanel() *tview.TextView {
 	return nil
 }
 
@@ -121,5 +147,5 @@ func (ui *KafkaTUI) CreateEnterPanel() *tview.Form {
 }
 
 func (ui *KafkaTUI) Start() error {
-	return ui.app.SetRoot(ui.enterPanel, true).Run()
+	return ui.app.SetRoot(ui.leftPanel, false).Run()
 }
