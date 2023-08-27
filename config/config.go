@@ -1,8 +1,10 @@
 package config
 
 type Config struct {
-	Brokers  []string
-	Protocol string
-	Cluster  bool
-	Debug    bool
+	Brokers          []string
+	SecurityProtocol string
+	User             string
+	Password         string
+	Cluster          bool
+	Debug            bool
 }

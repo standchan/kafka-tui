@@ -1,10 +1,10 @@
-package core
+package tui
 
 import (
 	"fmt"
-
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"kafka-tui/api"
 )
 
 /*
@@ -34,7 +34,7 @@ type KafkaTUI struct {
 	searchPanel *tview.InputField
 	topicsPanel *tview.List
 	infoPanel   *tview.TextView
-	// helpPanel    *tview.Flex
+	helpPanel   *tview.Flex
 
 	leftPanel  *tview.Flex
 	rightPanel *tview.Flex
@@ -43,7 +43,7 @@ type KafkaTUI struct {
 
 	version   string
 	gitCommit string
-	// config    config.Config
+	config    api.Config
 
 	app *tview.Application
 }
@@ -134,7 +134,7 @@ func (ui *KafkaTUI) CreateWelcomePanel() {
 
 func (ui *KafkaTUI) CreateEnterPanel() *tview.Form {
 	form := tview.NewForm().
-		AddDropDown("SecurityProtocal", []string{"SASL/PLAINTEXT"}, 0, nil).
+		AddDropDown("SecurityProtocol", []string{"SASL/PLAINTEXT"}, 0, nil).
 		AddInputField("BrokerList", "", 20, nil, nil).
 		AddInputField("UserName", "", 20, nil, nil).
 		AddPasswordField("Password", "", 10, '*', nil).
@@ -148,4 +148,11 @@ func (ui *KafkaTUI) CreateEnterPanel() *tview.Form {
 
 func (ui *KafkaTUI) Start() error {
 	return ui.app.SetRoot(ui.leftPanel, false).Run()
+}
+
+var outputMsgs = make(chan []OutputMsg, 0)
+
+type OutputMsg struct {
+	Color   tcell.Color
+	Message string
 }
