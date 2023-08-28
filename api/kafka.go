@@ -6,9 +6,10 @@ import (
 	"kafka-tui/config"
 )
 
+// todo:后续考虑是用插件的方式进行插入,shanbay-extension
 // user:user
 // password:bitnami
-// 
+//
 // op:search
 // node info、broker info
 // topic info

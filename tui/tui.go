@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
-	"kafka-tui/api"
+	"kafka-tui/config"
 )
 
 /*
@@ -38,17 +38,14 @@ type KafkaTUI struct {
 
 	leftPanel  *tview.Flex
 	rightPanel *tview.Flex
-
-	layout *tview.Flex
+	layout     *tview.Flex
+	pages      *tview.Pages
+	app        *tview.Application
 
 	version   string
 	gitCommit string
-	config    api.Config
-
-	app *tview.Application
+	config    config.Config
 }
-
-//kafClient KafClient, conf config.Config, version string, gitCommit string
 
 func NewKafkaTUI() *KafkaTUI {
 	tui := &KafkaTUI{}
@@ -81,6 +78,8 @@ func NewKafkaTUI() *KafkaTUI {
 	tui.layout = tview.NewFlex().
 		AddItem(tui.leftPanel, 0, 3, false).
 		AddItem(tui.rightPanel, 0, 8, false)
+	tui.pages = tview.NewPages()
+	tui.pages.AddPage("base", tui.layout, true, true)
 	return tui
 }
 
@@ -147,7 +146,7 @@ func (ui *KafkaTUI) CreateEnterPanel() *tview.Form {
 }
 
 func (ui *KafkaTUI) Start() error {
-	return ui.app.SetRoot(ui.leftPanel, false).Run()
+	return ui.app.SetRoot(ui.layout, false).Run()
 }
 
 var outputMsgs = make(chan []OutputMsg, 0)

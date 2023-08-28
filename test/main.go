@@ -2,21 +2,67 @@ package main
 
 import (
 	"fmt"
-	"time"
-
 	"github.com/rivo/tview"
+	"time"
 )
 
-func main() {
-	// 创建一个新的应用程序
-	app := tview.NewApplication()
+var app = tview.NewApplication()
 
+func main() {
+	CreateLoginPanel()
+}
+
+// todo:连接失败等错误可以采用统一样式的model进行展示
+func CreateLoginPanel() {
+	brokerInput := tview.NewInputField().SetLabel("Broker: ").SetFieldWidth(20)
+	portInput := tview.NewInputField().SetFieldWidth(4).SetText("9092")
+	userInput := tview.NewInputField().SetLabel("User: ").SetFieldWidth(20)
+	passwordInput := tview.NewInputField().SetLabel("Password: ").SetFieldWidth(20).SetMaskCharacter('*')
+	form := tview.NewForm().
+		AddDropDown("SecurityProtocol", []string{"SASL/PLAINTEXT"}, 0, nil).
+		AddInputField("BrokerList", "", 20, nil, nil).
+		AddInputField("UserName", "", 20, nil, nil).
+		AddPasswordField("Password", "", 10, '*', nil).
+		AddButton("Enter", func() {
+			broker := brokerInput.GetText()
+			port := portInput.GetText()
+			user := userInput.GetText()
+			password := passwordInput.GetText()
+			if mockKafka(broker, port, user, password) {
+				fmt.Println("Connect success!")
+			} else {
+				errorMessage := tview.NewModal().
+					SetText("Invalid username or password!").
+					AddButtons([]string{"OK"}).
+					SetDoneFunc(func(buttonIndex int, buttonLabel string) {
+						app.SetFocus(brokerInput)
+					})
+				app.SetRoot(errorMessage, true).SetFocus(errorMessage)
+				app.GetFocus()
+			}
+		}).
+		AddButton("Quit", func() {
+			app.Stop()
+		}).SetBorder(true).SetTitle("Enter KafkaConn Info").SetTitleAlign(tview.AlignLeft)
+
+	loginPage := tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(tview.NewTextView().SetText("Welcome to the Login Page").SetTextAlign(tview.AlignCenter), 0, 1, false).
+		AddItem(form, 0, 1, false)
+	if err := app.SetRoot(loginPage, true).EnableMouse(true).Run(); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func mockKafka(broker, port, user, password string) bool {
+	return true
+}
+
+func login() {
 	// 创建登陆界面的组件
 	usernameInput := tview.NewInputField().SetLabel("Username: ").SetFieldWidth(20)
 	passwordInput := tview.NewInputField().SetLabel("Password: ").SetFieldWidth(20).SetMaskCharacter('*')
 	loginButton := tview.NewButton("Login").SetSelectedFunc(func() {
 		// 获取输入的用户名和密码
-		usernameInput.GetText()
 		username := usernameInput.GetText()
 		password := passwordInput.GetText()
 
@@ -31,7 +77,7 @@ func main() {
 				for {
 					time.Sleep(time.Second) // 每秒更新一次时间
 					app.QueueUpdateDraw(func() {
-						newPage.SetText(fmt.Sprintf("Welcome to the new page!\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\nCurrent Time: %s", time.Now().Format("15:04:05")))
+						newPage.SetText(fmt.Sprintf("Welcome to the new page!\nCurrent Time: %s", time.Now().Format("15:04:05")))
 					})
 				}
 			}()
@@ -44,6 +90,7 @@ func main() {
 					app.SetFocus(usernameInput)
 				})
 			app.SetRoot(errorMessage, true).SetFocus(errorMessage)
+			app.GetFocus()
 		}
 	})
 
@@ -55,7 +102,7 @@ func main() {
 		AddItem(loginButton, 0, 1, false)
 
 	// 将登陆页面布局设置为根组件，并启动应用程序
-	if err := app.SetRoot(loginLayout, true).Run(); err != nil {
+	if err := app.SetRoot(loginLayout, true).EnableMouse(true).Run(); err != nil {
 		fmt.Println(err)
 	}
 }

@@ -3,12 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"kafka-tui/api"
+	"kafka-tui/config"
 	"kafka-tui/tui"
 	"strings"
 )
 
-var conf = api.Config{}
+// todo:如果我的作品能让你少加点班，多陪陪家人，那就是最好的回报了
+var conf = config.Config{}
 var Version string
 var GitCommit string
 var showVersion bool
