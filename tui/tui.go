@@ -35,6 +35,7 @@ type KafkaTUI struct {
 	topicsPanel *tview.List
 	infoPanel   *tview.TextView
 	helpPanel   *tview.Flex
+	hintPanel   *tview.Modal
 
 	leftPanel  *tview.Flex
 	rightPanel *tview.Flex
@@ -143,6 +144,10 @@ func (ui *KafkaTUI) CreateEnterPanel() *tview.Form {
 		}).SetButtonBackgroundColor(tcell.ColorRed)
 	form.SetBorder(true).SetTitle("Enter KafkaConn Info").SetTitleAlign(tview.AlignLeft)
 	return form
+}
+
+func (ui *KafkaTUI) CreateHintPanel() *tview.Modal {
+	return nil
 }
 
 func (ui *KafkaTUI) Start() error {

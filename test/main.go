@@ -14,15 +14,22 @@ func main() {
 
 // todo:连接失败等错误可以采用统一样式的model进行展示
 func CreateLoginPanel() {
+	securityProto := tview.NewDropDown().SetLabel("SecurityProtocol: ").SetOptions([]string{"SASL/PLAIN", "SSL/TLS", "SASL/SCRAM"}, nil)
 	brokerInput := tview.NewInputField().SetLabel("Broker: ").SetFieldWidth(20)
-	portInput := tview.NewInputField().SetFieldWidth(4).SetText("9092")
+	portInput := tview.NewInputField().SetLabel("Port: ").SetFieldWidth(20).SetText("9092")
+	//brokers := tview.NewFlex().
+	//	SetDirection(tview.FlexRow).
+	//	AddItem(brokerInput, 0, 1, false).
+	//	AddItem(portInput, 0, 1, false).SetBorder(false)
 	userInput := tview.NewInputField().SetLabel("User: ").SetFieldWidth(20)
 	passwordInput := tview.NewInputField().SetLabel("Password: ").SetFieldWidth(20).SetMaskCharacter('*')
-	form := tview.NewForm().
-		AddDropDown("SecurityProtocol", []string{"SASL/PLAINTEXT"}, 0, nil).
-		AddInputField("BrokerList", "", 20, nil, nil).
-		AddInputField("UserName", "", 20, nil, nil).
-		AddPasswordField("Password", "", 10, '*', nil).
+	tview.NewForm().AddFormItem(brokerInput)
+	loginModel := tview.NewForm().
+		AddFormItem(securityProto).
+		AddFormItem(brokerInput).
+		AddFormItem(portInput).
+		AddFormItem(userInput).
+		AddFormItem(passwordInput).
 		AddButton("Enter", func() {
 			broker := brokerInput.GetText()
 			port := portInput.GetText()
@@ -40,14 +47,10 @@ func CreateLoginPanel() {
 				app.SetRoot(errorMessage, true).SetFocus(errorMessage)
 				app.GetFocus()
 			}
-		}).
-		AddButton("Quit", func() {
-			app.Stop()
-		}).SetBorder(true).SetTitle("Enter KafkaConn Info").SetTitleAlign(tview.AlignLeft)
-
-	loginPage := tview.NewFlex().SetDirection(tview.FlexRow).
-		AddItem(tview.NewTextView().SetText("Welcome to the Login Page").SetTextAlign(tview.AlignCenter), 0, 1, false).
-		AddItem(form, 0, 1, false)
+		})
+	loginFlex := tview.NewFlex().SetDirection(tview.FlexRow).
+		AddItem(loginModel, 0, 1, true)
+	loginPage := tview.NewPages().AddPage("login", loginFlex, true, true)
 	if err := app.SetRoot(loginPage, true).EnableMouse(true).Run(); err != nil {
 		fmt.Println(err)
 	}
