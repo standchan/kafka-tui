@@ -17,10 +17,6 @@ func CreateLoginPanel() {
 	securityProto := tview.NewDropDown().SetLabel("SecurityProtocol: ").SetOptions([]string{"SASL/PLAIN", "SSL/TLS", "SASL/SCRAM"}, nil)
 	brokerInput := tview.NewInputField().SetLabel("Broker: ").SetFieldWidth(20)
 	portInput := tview.NewInputField().SetLabel("Port: ").SetFieldWidth(20).SetText("9092")
-	//brokers := tview.NewFlex().
-	//	SetDirection(tview.FlexRow).
-	//	AddItem(brokerInput, 0, 1, false).
-	//	AddItem(portInput, 0, 1, false).SetBorder(false)
 	userInput := tview.NewInputField().SetLabel("User: ").SetFieldWidth(20)
 	passwordInput := tview.NewInputField().SetLabel("Password: ").SetFieldWidth(20).SetMaskCharacter('*')
 	tview.NewForm().AddFormItem(brokerInput)

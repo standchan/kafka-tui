@@ -3,13 +3,11 @@ package main
 import (
 	"flag"
 	"fmt"
-	"kafka-tui/config"
-	"kafka-tui/tui"
 	"strings"
 )
 
 // todo:如果我的作品能让你少加点班，多陪陪家人，那就是最好的回报了
-var conf = config.Config{}
+var conf = Config{}
 var Version string
 var GitCommit string
 var showVersion bool
@@ -41,7 +39,7 @@ func main() {
 		return
 	}
 
-	if err := tui.NewKafkaTUI().Start(); err != nil {
+	if err := NewKafkaTUI().Start(); err != nil {
 		panic(err)
 	}
 }

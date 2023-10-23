@@ -1,10 +1,11 @@
-package tui
+package main
 
 import (
 	"fmt"
+	"github.com/Shopify/sarama"
 	"github.com/gdamore/tcell/v2"
+	"github.com/krallistic/kazoo-go"
 	"github.com/rivo/tview"
-	"kafka-tui/config"
 )
 
 /*
@@ -22,6 +23,8 @@ import (
 */
 
 type KafkaTUI struct {
+	kafkaCli         *sarama.Client
+	zookeeperClient  *kazoo.Kazoo
 	enterPanel       *tview.Form
 	versionPanel     *tview.Flex
 	versionInfoPanel *tview.TextView
@@ -45,7 +48,7 @@ type KafkaTUI struct {
 
 	version   string
 	gitCommit string
-	config    config.Config
+	config    Config
 }
 
 func NewKafkaTUI() *KafkaTUI {
