@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"fmt"
 	"github.com/Shopify/sarama"
+	"github.com/krallistic/kazoo-go"
 	"github.com/pkg/errors"
 	"github.com/xdg-go/scram"
 	"hash"
@@ -136,6 +137,39 @@ type kafkaOpts struct {
 	allowConcurrent          bool
 	allowAutoTopicCreation   bool
 	verbosityLogLevel        int
+}
+
+var (
+	clusterBrokers                     = "kafka_cluster_brokers"
+	clusterBrokerInfo                  = "kafka_cluster_broker_info"
+	topicPartitions                    = "kafka_topic_partitions"
+	topicCurrentOffset                 = "kafka_topic_current_offset"
+	topicOldestOffset                  = "kafka_topic_oldest_offset"
+	topicPartitionLeader               = "kafka_topic_partition_leader"
+	topicPartitionReplicas             = "kafka_topic_partition_replicas"
+	topicPartitionInSyncReplicas       = "kafka_topic_partition_in_sync_replicas"
+	topicPartitionUsesPreferredReplica = "kafka_topic_partition_uses_preferred_replica"
+	topicUnderReplicatedPartition      = "kafka_topic_under_replicated_partition"
+	consumergroupCurrentOffset         = "kafka_consumergroup_current_offset"
+	consumergroupCurrentOffsetSum      = "kafka_consumergroup_current_offset_sum"
+	consumergroupLag                   = "kafka_consumergroup_lag"
+	consumergroupLagSum                = "kafka_consumergroup_lag_sum"
+	consumergroupLagZookeeper          = "kafka_consumergroup_lag_zookeeper"
+	consumergroupMembers               = "kafka_consumergroup_members"
+)
+
+type Desc struct {
+	fqName string
+	help   string
+}
+
+func NewZookeeperClient(opts kafkaOpts) (*kazoo.Kazoo, error) {
+	var err error
+	zookeeperClient, err := kazoo.NewKazoo(opts.uriZookeeper, nil)
+	if err != nil {
+		return nil, errors.Wrap(err, "error connecting to zookeeper")
+	}
+	return zookeeperClient, nil
 }
 
 func NewKafkaClient(opts kafkaOpts) (*sarama.Client, error) {
