@@ -163,17 +163,8 @@ type Desc struct {
 	help   string
 }
 
-func NewZookeeperClient(opts kafkaOpts) (*kazoo.Kazoo, error) {
-	var err error
-	zookeeperClient, err := kazoo.NewKazoo(opts.uriZookeeper, nil)
-	if err != nil {
-		return nil, errors.Wrap(err, "error connecting to zookeeper")
-	}
-	return zookeeperClient, nil
-}
-
 func NewKafkaClient(opts kafkaOpts) (*sarama.Client, error) {
-	//var zookeeperClient *kazoo.Kazoo
+	//var zooClient *kazoo.Kazoo
 	config := sarama.NewConfig()
 	kafkaVersion, err := sarama.ParseKafkaVersion(opts.kafkaVersion)
 	if err != nil {
@@ -258,12 +249,13 @@ func NewKafkaClient(opts kafkaOpts) (*sarama.Client, error) {
 		}
 	}
 
-	//if opts.useZooKeeperLag {
-	//	zookeeperClient, err = kazoo.NewKazoo(opts.uriZookeeper, nil)
-	//	if err != nil {
-	//		return nil, errors.Wrap(err, "error connecting to zookeeper")
-	//	}
-	//}
+	//todo: zookeeper
+	if opts.useZooKeeperLag {
+		_, err := kazoo.NewKazoo(opts.uriZookeeper, nil)
+		if err != nil {
+			return nil, errors.Wrap(err, "error connecting to zookeeper")
+		}
+	}
 
 	interval, err := time.ParseDuration(opts.metadataRefreshInterval)
 	if err != nil {
@@ -280,8 +272,23 @@ func NewKafkaClient(opts kafkaOpts) (*sarama.Client, error) {
 }
 
 // 收集kafka信息
-func collect() {
-
+func (k *KafkaTUI) collect() {
+	brokers := k.kafkaCli.Brokers()
+	for _, broker := range brokers {
+		broker.ListGroups(&sarama.ListGroupsRequest{})
+		broker.DescribeGroups(&sarama.DescribeGroupsRequest{})
+		//broker.FetchOffset(&sarama.FetchOffsetRequest{})
+	}
+	k.kafkaCli.RefreshMetadata()
+	k.kafkaCli.Topics()
+	k.kafkaCli.Leader("topic", 1)
+	k.kafkaCli.Broker(1)
+	k.kafkaCli.Partitions("topic")
+	k.kafkaCli.GetOffset("topic", 1, sarama.OffsetNewest)
+	k.kafkaCli.Replicas("topic", 1)
+	k.kafkaCli.InSyncReplicas("topic", 1)
+	// kafka_export.go 571 line
+	//sarama.OffsetFetchRequest{}
 }
 
 // 操作kafka

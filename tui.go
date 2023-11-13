@@ -23,8 +23,8 @@ import (
 */
 
 type KafkaTUI struct {
-	kafkaCli         *sarama.Client
-	zookeeperClient  *kazoo.Kazoo
+	kafkaCli         sarama.Client
+	zooClient        *kazoo.Kazoo
 	enterPanel       *tview.Form
 	versionPanel     *tview.Flex
 	versionInfoPanel *tview.TextView
@@ -84,58 +84,59 @@ func NewKafkaTUI() *KafkaTUI {
 		AddItem(tui.rightPanel, 0, 8, false)
 	tui.pages = tview.NewPages()
 	tui.pages.AddPage("base", tui.layout, true, true)
+
 	return tui
 }
 
-func (ui *KafkaTUI) CreateVersionPanel() *tview.Flex {
+func (k *KafkaTUI) CreateVersionPanel() *tview.Flex {
 	versionPanel := tview.NewFlex().SetDirection(tview.FlexRow)
-	versionPanel.SetBorder(true).SetTitle(fmt.Sprintf(" Version: %s (%s) ", ui.version, ui.gitCommit))
-	ui.versionInfoPanel = tview.NewTextView().SetDynamicColors(true).SetRegions(true)
-	versionPanel.AddItem(ui.versionInfoPanel, 2, 1, false)
+	versionPanel.SetBorder(true).SetTitle(fmt.Sprintf(" Version: %s (%s) ", k.version, k.gitCommit))
+	k.versionInfoPanel = tview.NewTextView().SetDynamicColors(true).SetRegions(true)
+	versionPanel.AddItem(k.versionInfoPanel, 2, 1, false)
 	return versionPanel
 }
 
-func (ui *KafkaTUI) CreateMetaPanel() *tview.TextView {
+func (k *KafkaTUI) CreateMetaPanel() *tview.TextView {
 	return nil
 }
 
-func (ui *KafkaTUI) CreateResultsPanel() *tview.TextView {
+func (k *KafkaTUI) CreateResultsPanel() *tview.TextView {
 	return nil
 }
 
-func (ui *KafkaTUI) CreateCommandPanel() *tview.TextView {
+func (k *KafkaTUI) CreateCommandPanel() *tview.TextView {
 	return nil
 }
 
-func (ui *KafkaTUI) CreateOutputPanel() *tview.List {
+func (k *KafkaTUI) CreateOutputPanel() *tview.List {
 	return nil
 }
 
-func (ui *KafkaTUI) CreateSearchPanel() *tview.InputField {
+func (k *KafkaTUI) CreateSearchPanel() *tview.InputField {
 	searchArea := tview.NewInputField().SetLabel(" TOPIC ")
 	searchArea.SetBorder(true).SetTitle(" Search (%s) ")
 	return searchArea
 }
 
-func (ui *KafkaTUI) CreateTopicsPanel() *tview.List {
+func (k *KafkaTUI) CreateTopicsPanel() *tview.List {
 	topicList := tview.NewList().ShowSecondaryText(false)
 	topicList.SetBorder(true).SetTitle(" Keys (%s) ")
 	return topicList
 }
 
-func (ui *KafkaTUI) CreateInfoPanel() *tview.TextView {
+func (k *KafkaTUI) CreateInfoPanel() *tview.TextView {
 	infoArea := tview.NewTextView()
 	return infoArea
 }
 
-func (ui *KafkaTUI) CreateWelcomePanel() {
+func (k *KafkaTUI) CreateWelcomePanel() {
 	welcomeScreen := tview.NewTextView().SetBorder(true).SetTitle("Hello, world!")
 	if err := tview.NewApplication().SetRoot(welcomeScreen, true).Run(); err != nil {
 		panic(err)
 	}
 }
 
-func (ui *KafkaTUI) CreateEnterPanel() *tview.Form {
+func (k *KafkaTUI) CreateEnterPanel() *tview.Form {
 	form := tview.NewForm().
 		AddDropDown("SecurityProtocol", []string{"SASL/PLAINTEXT"}, 0, nil).
 		AddInputField("BrokerList", "", 20, nil, nil).
@@ -143,18 +144,18 @@ func (ui *KafkaTUI) CreateEnterPanel() *tview.Form {
 		AddPasswordField("Password", "", 10, '*', nil).
 		AddButton("Enter", nil).
 		AddButton("Quit", func() {
-			ui.app.Stop()
+			k.app.Stop()
 		}).SetButtonBackgroundColor(tcell.ColorRed)
 	form.SetBorder(true).SetTitle("Enter KafkaConn Info").SetTitleAlign(tview.AlignLeft)
 	return form
 }
 
-func (ui *KafkaTUI) CreateHintPanel() *tview.Modal {
+func (k *KafkaTUI) CreateHintPanel() *tview.Modal {
 	return nil
 }
 
-func (ui *KafkaTUI) Start() error {
-	return ui.app.SetRoot(ui.layout, false).Run()
+func (k *KafkaTUI) Start() error {
+	return k.app.SetRoot(k.layout, false).Run()
 }
 
 var outputMsgs = make(chan []OutputMsg, 0)
